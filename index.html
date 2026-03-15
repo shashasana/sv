@@ -184,27 +184,27 @@
 <!-- Metric Card 1 -->
 <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 card-lift reveal" style="transition-delay:0.0s">
 <div class="text-3xl font-bold text-indigo-600 mb-1" data-count="10" data-suffix="+">0+</div>
-<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Years Exp.</div>
+<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Years Experience</div>
 </div>
 <!-- Metric Card 2 -->
 <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 card-lift reveal" style="transition-delay:0.08s">
 <div class="text-3xl font-bold text-indigo-600 mb-1" data-count="110" data-suffix="+">0+</div>
-<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Businesses</div>
+<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Businesses Supported</div>
 </div>
 <!-- Metric Card 3 -->
 <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 card-lift reveal" style="transition-delay:0.16s">
 <div class="text-3xl font-bold text-indigo-600 mb-1" data-count="700" data-suffix="">0</div>
-<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Leads/Mo</div>
+<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Leads Per Month</div>
 </div>
 <!-- Metric Card 4 -->
 <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 card-lift reveal" style="transition-delay:0.24s">
 <div class="text-3xl font-bold text-indigo-600 mb-1" data-count="25" data-suffix="%">0%</div>
-<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Org. Growth</div>
+<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Organic Growth</div>
 </div>
 <!-- Metric Card 5 -->
 <div class="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 card-lift reveal" style="transition-delay:0.32s">
 <div class="text-3xl font-bold text-indigo-600 mb-1" data-count="30" data-suffix="%">0%</div>
-<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Conv. Boost</div>
+<div class="text-xs uppercase tracking-widest text-gray-500 font-semibold">Conversion Boost</div>
 </div>
 </div>
 </div>
@@ -364,19 +364,13 @@
 <section class="py-40 px-6 bg-gray-50/50" id="contact">
 <div class="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-100">
 <div class="text-center mb-10">
-<h2 class="text-3xl font-bold mb-4">Get in Touch</h2>
-<p class="text-gray-600">Ready to scale your organic growth? Drop me a message below.</p>
+<h2 class="text-3xl font-bold mb-4">Let's Talk</h2>
+<p class="text-gray-600">Ready to scale your organic growth? Let's talk - drop me a message below.</p>
 </div>
-<!-- 
-  Web3Forms integration — go to https://web3forms.com, enter your email, copy the Access Key
-  and paste it as the value of the access_key hidden input below.
--->
-<form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
-  <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
-  <input type="hidden" name="subject" value="New Portfolio Inquiry — Sahil Varma">
+<!-- Formspree-powered contact form -->
+<form id="contact-form" action="https://formspree.io/f/mojknkvz" method="POST" class="space-y-6">
+  <input type="hidden" name="_subject" value="New Portfolio Inquiry ? Sahil Varma">
   <input type="hidden" name="from_name" value="Sahil Varma Portfolio">
-  <input type="hidden" name="redirect" value="false">
-  <input type="checkbox" name="botcheck" class="hidden" style="display:none">
 <div>
 <label class="block text-sm font-semibold text-gray-700 mb-2" for="name">Name</label>
 <input class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" id="name" name="name" placeholder="John Doe" required="" type="text"/>
@@ -461,12 +455,38 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 /* ── Contact form submit feedback ── */
 const form = document.getElementById('contact-form');
 const toast = document.getElementById('toast');
-if (form) {
-  form.addEventListener('submit', e => {
+if (form && toast) {
+  const submitButton = form.querySelector('[type="submit"]');
+  const successMessage = '✅ Message sent — Sahil will get back to you soon!';
+  const errorMessage = '⚠️ Something went wrong — please try again.';
+  let toastTimer = null;
+
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    toast.classList.add('show');
-    form.reset();
-    setTimeout(() => toast.classList.remove('show'), 4000);
+    submitButton?.setAttribute('disabled', 'true');
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+      toast.textContent = successMessage;
+      form.reset();
+    } catch (error) {
+      console.error('Contact form submission failed', error);
+      toast.textContent = errorMessage;
+    } finally {
+      window.clearTimeout(toastTimer);
+      toast.classList.add('show');
+      toastTimer = window.setTimeout(() => {
+        toast.classList.remove('show');
+        toast.textContent = successMessage;
+      }, 4000);
+      submitButton?.removeAttribute('disabled');
+    }
   });
 }
 </script>
